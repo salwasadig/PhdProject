@@ -1,6 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
-# Create your views here.
-def main(reqest):
-    return HttpResponse('hellow')
+
+
+def home(request):
+    pass
+
+def dashboard(reqest):
+    return render(reqest, 'main/template.html')
