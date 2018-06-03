@@ -1,4 +1,4 @@
-from MLModels import MLmodel
+from ML import MLmodel
 import pickle
 import pandas as pd
 

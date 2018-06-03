@@ -2,7 +2,7 @@ import os
 import pickle
 import pandas as pd
 import numpy as np
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
@@ -50,7 +50,7 @@ class MLmodel():
         
         new_df = new_df.drop('state', 1)
         self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(new_df, y, test_size = 0.1, random_state=42)
-        return self.X_train, self.X_test, self.Y_train, self.Y_test
+        return self.X_train, self.X_test, self.Y_train, self.Y_test, new_df
         
     # Decision Tree
     def DecisionTree(self):

@@ -1,4 +1,6 @@
 from django.contrib import admin
-#from models import main
+from .models import MainCategory, Country, ProjectFeature
 
-#admin.site.register(main)
+admin.site.register(MainCategory)
+admin.site.register(Country)
+admin.site.register(ProjectFeature)
