@@ -1,13 +1,39 @@
 <!DOCTYPE html> {% extends 'main/template.html' %} {% block content %}
-<ul>
-    <li>{{ data.name }}</li>
-    <li>{{ data.main_category }}</li>
-    <li>{{ data.backers }}</li>
-    <li>{{ data.country }}</li>
-    <li>{{ data.usd_goal_real }}</li>
-    <li>{{ data.duration_days }}</li>
-    <li>{{ RF }}</li>
-    <li>{{ DT }}</li>
-</ul>
-
+<div class="container" style="width:350px">
+<ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Project name:
+            <span class="badge progress-bar-info">{{ data.name }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Category:
+            <span class="badge badge-primary badge-pill">{{ data.main_category }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Backers:
+            <span class="badge badge-warning badge-pill">{{ data.backers }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Country:
+            <span class="badge badge-primary badge-pill">{{ data.country }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            USD Goal:
+            <span class="badge badge-primary badge-pill">${{ data.usd_goal_real }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Duration (Days):
+            <span class="badge badge-primary badge-pill">{{ data.duration_days }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Random Forest Model prediction:
+            <span class="badge progress-bar-danger">{{ RF }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Decision Tree Model prediction:
+            <span class="badge progress-bar-danger">{{ DT }}</span>
+        </li>
+      </ul>
+    </div>
+</div>
 {% endblock %}

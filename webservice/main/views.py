@@ -22,7 +22,7 @@ def DT_model(data):
     else:
         DT = pickle.load(open('finalized_DT_model.sav', 'rb'))
     predected = DT.predict(data)
-    return predected
+    return predected[0]
 
 def RF_model(data):    
     if not os.path.exists('finalized_RF_model.sav'):
@@ -33,7 +33,7 @@ def RF_model(data):
     else:
         RF = pickle.load(open('finalized_RF_model.sav', 'rb'))
     predected = RF.predict(data)
-    return predected
+    return predected[0]
 
 
 def home(request):
@@ -57,7 +57,7 @@ def predect(request):
     context = {'form': form}
     return render(request, 'main/form.html', context=context)
 
-def save_predect(request):
+def savePredict(request):
     if request.method == "POST":
         form = FeaturesForm(request.POST)
         if form.is_valid():
@@ -72,8 +72,30 @@ def save_predect(request):
 def result(request, id):
     data = ProjectFeature.objects.get(id=id)
     y = pd.DataFrame([[data.main_category_id, data.backers, data.country_id, data.usd_goal_real,data.duration_days]])
-    print(y)
-    RF_predected = RF_model(y)
-    DT_predected = DT_model(y)
-    context={'data':data, 'DT':DT_predected, 'RF':RF_predected}
+    RF_predicted = RF_model(y)
+    DT_predicted = DT_model(y)
+    ProjectFeature.objects.filter(id=id).update(predected = DT_predicted)
+    context={'data':data, 'DT':DT_predicted, 'RF':RF_predicted}
     return render(request, 'main/result.html', context=context)
+
+def myprojects(request):
+    projects = ProjectFeature.objects.all()
+    context = {'projects':projects}
+    return render(request, 'main/myprojects.html', context=context)
+
+def getProject(request, id):
+    project = ProjectFeature.objects.get(pk=id)
+    form = FeaturesForm(instance=project)
+    context={'form':form, 'project': project}
+    return render(request, 'main/getProject.html', context=context)
+
+def updatePredict(request, id):
+    if request.method == "POST":
+        project = ProjectFeature.objects.get(id=id)
+        form = FeaturesForm(request.POST, instance= project)
+        if form.is_valid():
+            form.save()
+            return redirect('/result/{}'.format(id))
+    else:
+        form = FeaturesForm()
+    return render(request, 'main/form.html', {'form': form})

@@ -1,7 +1,9 @@
 {% extends 'main/template.html' %} {% block content %}
 <h4>Enter your Project Features:</h4>
-<form method="POST" class="post-form" action="{% url 'save_predect' %}">
+<div class="container" style="width:350px">
+<form method="POST" class="post-form" action="{% url 'savePredict' %}">
     {% csrf_token %} {{ form.as_table }}
     <button type="submit" class="save btn btn-default">Predect</button>
 </form>
+</div>
 {% endblock %}
