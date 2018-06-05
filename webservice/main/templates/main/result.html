@@ -1,9 +1,9 @@
 <!DOCTYPE html> {% extends 'main/template.html' %} {% block content %}
 <div class="container" style="width:350px">
-<ul class="list-group">
+    <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between align-items-center">
             Project name:
-            <span class="badge progress-bar-info">{{ data.name }}</span>
+            <span class="badge progress-bar-waning">{{ data.name }}</span>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
             Category:
@@ -26,14 +26,28 @@
             <span class="badge badge-primary badge-pill">{{ data.duration_days }}</span>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            Random Forest Model prediction:
-            <span class="badge progress-bar-danger">{{ RF }}</span>
+            Random Forest Model prediction: {% if RF == 1.0 %}
+            <span style="color:green;background-color:aliceblue;" class="badge badge-pill">{{ RF }}</span> {% else %}
+            <span class="badge progress-bar-danger">{{ RF }}</span> {% endif %}
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            Decision Tree Model prediction:
-            <span class="badge progress-bar-danger">{{ DT }}</span>
+            Decision Tree Model prediction: {% if DT == 1.0 %}
+            <span style="color:green;background-color:aliceblue;" class="badge badge-pill">{{ DT }}</span> {% else %}
+            <span class="badge progress-bar-danger">{{ DT }}</span> {% endif %}
         </li>
-      </ul>
-    </div>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a class="button" href="{% url 'getProject' data.id %}">Update Features</a>
+        </li>
+    </ul>
 </div>
+<style>
+    a.button {
+        -webkit-appearance: button;
+        -moz-appearance: button;
+        appearance: button;
+        text-decoration: none;
+        color: initial;
+        padding: 5px;
+    }
+</style>
 {% endblock %}
