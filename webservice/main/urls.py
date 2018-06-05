@@ -3,8 +3,9 @@ from . import  views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('charts/', views.charts, name='charts'),
+    path('dashboard/', views.home, name='home'),
+    path('dashboardcharts/', views.dashboardcharts, name='dashboardcharts'),
+    path('projectscharts/', views.projectscharts, name='projectscharts'),
     path('predect/', views.predect, name='predect'),
     path('savePredict/', views.savePredict, name='savePredict'),
     path('result/<id>', views.result, name='result'),

@@ -44,21 +44,15 @@
             <div class="sidebar-wrapper">
                 <div class="logo">
                     <a href="{% url 'home' %}" class="simple-text">
-                    Home
+                    Dashboard
                 </a>
                 </div>
 
                 <ul class="nav">
-                    <li class="active">
-                        <a href="{% url 'dashboard' %}">
-                            <i class="pe-7s-graph"></i>
-                            <p>Dashboard</p>
-                        </a>
-                    </li>
                     <li>
-                        <a href="{% url 'charts' %}">
+                        <a href="{% url 'projectscharts' %}">
                             <i class="pe-7s-display1"></i>
-                            <p>Charts</p>
+                            <p>Projects Charts</p>
                         </a>
                     </li>
                     <li>

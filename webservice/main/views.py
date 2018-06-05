@@ -13,6 +13,17 @@ from django.shortcuts import redirect
 model = ML.MLmodel()
 X_train, X_test, Y_train, Y_test, df = model.get_data()
 
+
+def scusses_fail():
+    dfstate_1 = pd.DataFrame(df[df.state == 1.0].groupby('main_category').state.count())
+    dfstate_0 = pd.DataFrame(df[df.state == 0.0].groupby('main_category').state.count())
+    dfstate_0.reset_index(level=0, inplace=True)
+    dfstate_1.reset_index(level=0, inplace=True)
+    dfstate_0.columns = ['Category', 'Fail']
+    dfstate_1.columns = ['Category', 'Sucsses']
+    df_state_1_0 = dfstate_0.merge(dfstate_1, on='Category')
+    return df_state_1_0.to_dict()
+
 def DT_model(data):
     if not os.path.exists('finalized_DT_model.sav'):
         # save the model to disk
@@ -39,13 +50,22 @@ def RF_model(data):
 def home(request):
     return render(request, 'main/home.html')
 
-def dashboard(request):
-    return render(request, 'main/charts.html')
+def dashboardcharts(request):
+    countries_chart = df.country.value_counts().to_dict()
+    categories_chart = df.main_category.value_counts().to_dict()
+    categories_launched_chart = df.main_category.groupby(df.launched.dt.year).count().to_dict()
+    categories_sucsses_fail = scusses_fail()
+    categories_pledged = df.pledged.groupby(df.main_category).count().to_dict()
+    datacharts = {'countries':countries_chart,
+                  'categoies':categories_chart,
+                  'cat_launched':categories_launched_chart,
+                  'cat_states':categories_sucsses_fail,
+                  'cat_pledged':categories_pledged}
+    return HttpResponse(convert_dict_json(datacharts))
 
-def charts(request):
-    datadict = df['main_category'].value_counts().to_dict()
-    #lunched = df['main_category'].groupby(df.launched.dt.year).count().to_dict()
-    return HttpResponse(convert_dict_json(datadict))
+def projectscharts(request):
+    #return HttpResponse(convert_dict_json(categories_chart))
+    pass
 
 def convert_dict_json(dic):
     jsonData = []

@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html> {% block content %}
+<script src="{% static 'main/assets/js/jquery.3.2.1.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'main/assets/js/Chart.js' %}"></script>
+
+
+
+<div class="flex-grid" style="width: 100%">
+    <div>
+        <iframe width="500" height="250" src={% static 'main/world.html' %}></iframe>
+    </div>
+    <div>
+        <canvas id="countries"></canvas>
+    </div>
+    <div>
+        <canvas id="categoies"></canvas>
+    </div>
+    <div>
+        <canvas id="cat_launched"></canvas>
+    </div>
+    <div>
+        <canvas id="cat_states"></canvas>
+    </div>
+    <div>
+        <canvas id="cat_pledged"></canvas>
+    </div>
+</div>
+<script>
+    $(function() {
+        $.ajax({
+            url: '/dashboardcharts/',
+            dataType: 'json',
+            type: 'GET',
+            success: function(data) {
+                for (prop in data) {
+                    if (data[prop].label == "cat_states") {
+                        plotting2(data[prop].value, data[prop].label);
+                    } else {
+                        plotting(data[prop].value, data[prop].label);
+                    }
+                }
+            }
+        });
+    });
+
+
+    function plotting(data, id) {
+        var labels = Object.keys(data);
+        var values = Object.values(data);
+        if (id == "countries") {
+            var type = 'bar';
+        } else if (id == "categoies") {
+            var type = 'bar';
+        } else if (id == "cat_launched") {
+            var type = 'line';
+        } else if (id == "cat_launched") {
+            var type = 'line';
+        } else if (id == "cat_states") {
+            var type = 'line';
+        } else if (id == "cat_pledged") {
+            var type = 'radar';
+        } else {
+            var type = 'line';
+        }
+
+        var ctx = document.getElementById(id);
+        var myChart = new Chart(ctx, {
+            type: type,
+            responsive: false,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: id,
+                    data: values,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    };
+</script>
+<script>
+    function plotting2(data, id) {
+        var chartcanvas = document.getElementById(id);
+
+        var values = Object.values(data);
+        var labels = Object.values(values)[0];
+        var fail = Object.values(values)[1];
+        var sucsses = Object.values(values)[2];
+        console.log(Object.values(values)[2]);
+
+        Chart.defaults.global.defaultFontFamily = "Lato";
+        Chart.defaults.global.defaultFontSize = 14;
+
+        var fail = {
+            label: 'Fail Projects',
+            data: Object.values(fail),
+            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 0.3,
+            yAxisID: "y-axis-density"
+        };
+
+        var sucsses = {
+            label: 'Sucsses Projects',
+            data: Object.values(sucsses),
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 0.5,
+            yAxisID: "y-axis-gravity"
+        };
+
+        var allData = {
+            labels: Object.values(labels),
+            datasets: [fail, sucsses]
+        };
+
+        var chartOptions = {
+            scales: {
+                xAxes: [{
+                    barPercentage: 1,
+                    categoryPercentage: 0.6
+                }],
+                yAxes: [{
+                    id: "y-axis-density"
+                }, {
+                    id: "y-axis-gravity"
+                }]
+            }
+        };
+
+        var barChart = new Chart(chartcanvas, {
+            type: 'bar',
+            data: allData,
+            options: chartOptions
+        });
+    }
+</script>
+<style>
+    .flex-grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .flex-grid>div {
+        width: 45%;
+        height: 50%;
+        margin: 20px;
+    }
+</style>
+{% endblock %}

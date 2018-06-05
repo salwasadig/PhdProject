@@ -13,7 +13,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 ##data = os.path.join(ROOT_DIR, '../../models/data/data.csv')
-data = os.path.join(ROOT_DIR, 'data/data.csv')
+data = os.path.join(ROOT_DIR, 'data/dataset.csv')
 
 class MLmodel():
     
@@ -24,33 +24,25 @@ class MLmodel():
         self.Y_train = Y_train
         self.Y_test = Y_text
 
+
     def get_data(self):
-        df = pd.read_csv(self.path)
-        df.dropna(how='any', axis=0, inplace=True)
-    
+        df = pd.read_csv(self.path, parse_dates=['deadline','launched'])
+        newdf = df.copy()
         
-        df['category'] = df['category'].astype('category').cat.codes
-        df['main_category'] = df['main_category'].astype('category').cat.codes
-        df['currency'] = df['currency'].astype('category').cat.codes
-        df['deadline'] = pd.to_datetime(df['deadline'], format='%d/%m/%Y').dt.date
-        df['launched'] = pd.to_datetime(df['launched'], format='%d/%m/%Y %H:%M').dt.date
-        df['country'] = df['country'].astype('category').cat.codes
-
-        df['duration_days'] = df['deadline'].subtract(df['launched']).dt.days
-        df['state'] = df['state'].astype('category')
-        df['state'] = df['state'].map({'failed': 0,'successful': 1})
-
+        newdf['country'] = newdf['country'].astype('category').cat.codes
+        newdf['category'] = newdf['category'].astype('category').cat.codes
+        newdf['main_category'] = newdf['main_category'].astype('category').cat.codes
+        newdf['currency'] = newdf['currency'].astype('category').cat.codes
+        
         to_drop = ['ID', 'name','currency','category','usd pledged','deadline','pledged','launched','goal','usd_pledged_real']
 
-        new_df = df.drop(columns=to_drop, axis=1)
-    
-        new_df.dropna(how='any', axis=0, inplace=True)
+        newdf.drop(columns=to_drop, axis=1, inplace=True)
 
-        y = new_df['state']
+        y = newdf['state']
         
-        new_df = new_df.drop('state', 1)
-        self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(new_df, y, test_size = 0.1, random_state=42)
-        return self.X_train, self.X_test, self.Y_train, self.Y_test, new_df
+        newdf = newdf.drop('state', 1)
+        self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(newdf, y, test_size = 0.1, random_state=42)
+        return self.X_train, self.X_test, self.Y_train, self.Y_test, df
         
     # Decision Tree
     def DecisionTree(self):
