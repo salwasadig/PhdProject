@@ -9,6 +9,8 @@ import os
 from .forms import FeaturesForm
 from .models import ProjectFeature
 from django.shortcuts import redirect
+from django.db.models import Sum
+
 
 model = ML.MLmodel()
 X_train, X_test, Y_train, Y_test, df = model.get_data()
@@ -26,10 +28,8 @@ def scusses_fail():
 
 def DT_model(data):
     if not os.path.exists('finalized_DT_model.sav'):
-        # save the model to disk
-        DT = model.DecisionTree()
-        filename = 'finalized_DT_model.sav'
-        pickle.dump(DT, open(filename, 'wb'))
+        model.DecisionTree()
+        DT = pickle.load(open('finalized_DT_model.sav', 'rb'))
     else:
         DT = pickle.load(open('finalized_DT_model.sav', 'rb'))
     predected = DT.predict(data)
@@ -37,10 +37,8 @@ def DT_model(data):
 
 def RF_model(data):    
     if not os.path.exists('finalized_RF_model.sav'):
-        # save the model to disk
-        RF = model.RandomForest()
-        filename = 'finalized_RF_model.sav'
-        pickle.dump(RF, open(filename, 'wb'))  
+        model.RandomForest()
+        RF = pickle.load(open('finalized_RF_model.sav', 'rb'))
     else:
         RF = pickle.load(open('finalized_RF_model.sav', 'rb'))
     predected = RF.predict(data)
@@ -64,8 +62,19 @@ def dashboardcharts(request):
     return HttpResponse(convert_dict_json(datacharts))
 
 def projectscharts(request):
-    #return HttpResponse(convert_dict_json(categories_chart))
-    pass
+    allprojects = ProjectFeature.objects.count()
+    DT_success = ProjectFeature.objects.filter(DT_predicted = 1).count()
+    DT_fail = ProjectFeature.objects.filter(DT_predicted = 0).count()
+    RF_success = ProjectFeature.objects.filter(RF_predicted = 1).count()
+    RF_fail = ProjectFeature.objects.filter(RF_predicted = 0).count()
+    if allprojects:
+        successper = round((DT_success+RF_success)/(allprojects * 2) * 100, 2)
+        failper = round((DT_fail+RF_fail)/(allprojects*2) * 100, 2)
+        context = {'allprojects':allprojects, 'success': DT_success+RF_success,'successper':successper, 'fail': DT_fail+RF_fail, 'failper':failper}
+    else:
+        context = {'allprojects':'', 'success': '','successper':'', 'fail': '', 'failper':''}
+    return render(request, 'main/projectscharts.html', context)
+    
 
 def convert_dict_json(dic):
     jsonData = []
@@ -82,7 +91,6 @@ def savePredict(request):
         form = FeaturesForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
-            #post.author = request.user
             post.save()
             return redirect('/result/{}'.format(post.pk))
     else:
@@ -91,10 +99,10 @@ def savePredict(request):
 
 def result(request, id):
     data = ProjectFeature.objects.get(id=id)
-    y = pd.DataFrame([[data.main_category_id, data.backers, data.country_id, data.usd_goal_real,data.duration_days]])
+    y = pd.DataFrame([[data.main_category_id, data.country_id, data.usd_pledged, data.usd_goal_real,data.duration_days]])
     RF_predicted = RF_model(y)
     DT_predicted = DT_model(y)
-    ProjectFeature.objects.filter(id=id).update(predected = DT_predicted)
+    ProjectFeature.objects.filter(id=id).update(DT_predicted = DT_predicted, RF_predicted = RF_predicted)
     context={'data':data, 'DT':DT_predicted, 'RF':RF_predicted}
     return render(request, 'main/result.html', context=context)
 

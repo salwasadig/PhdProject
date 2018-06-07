@@ -3,8 +3,49 @@
 <script src="{% static 'main/assets/js/jquery.3.2.1.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'main/assets/js/Chart.js' %}"></script>
 
-<div style="width: 300px; height: 300px">
-    <canvas id="barChart" width="300px" height="300px"></canvas>
+<div class="container" style="background: #e1dbe8;border: solid 0.5px #986dda;padding: 5px;width: auto;">
+
+    <div class="ago box">
+        <span class="bpi">Total Projects</span>
+        <h1><i class="pe-7s-display1"></i></h1>
+        <h2 class="bph"> {{ allprojects }}</h2>
+        <hr class="box2">
+        <small class="bpj bpk">100%</small>
+    </div>
+    <div class="ago box">
+        <span class="bpi">Success Predictions</span>
+        <h1><i class="pe-7s-check"></i></h1>
+        <h2 class="bph">{{ success }}</h2>
+        <hr class="box2">
+        <small class="bpj bpk">%{{ successper }}</small>
+    </div>
+    <div class="ago box">
+        <span class="bpi">Fail Predictions</span>
+        <h1><i class="pe-7s-attention"></i></h1>
+        <h2 class="bph">{{ fail }}</h2>
+        <hr class="box2">
+        <small class="bpj bpk">%{{ failper }}</small>
+    </div>
+
+</div>
+
+<hr class="box2">
+<div class="flex-grid" style="width: 100%">
+    <div>
+        <canvas id="countries"></canvas>
+    </div>
+    <div>
+        <canvas id="categoies"></canvas>
+    </div>
+    <div>
+        <canvas id="cat_launched"></canvas>
+    </div>
+    <div>
+        <canvas id="cat_states"></canvas>
+    </div>
+    <div>
+        <canvas id="cat_pledged"></canvas>
+    </div>
 </div>
 <script>
     $(function() {
@@ -13,26 +54,45 @@
             dataType: 'json',
             type: 'GET',
             success: function(data) {
-                plotting(data);
+                for (prop in data) {
+                    if (data[prop].label == "cat_states") {
+                        plotting2(data[prop].value, data[prop].label);
+                    } else {
+                        plotting(data[prop].value, data[prop].label);
+                    }
+                }
             }
         });
     });
 
-    function plotting(data) {
-        var labels = Array();
-        var values = Array();
-        data.forEach(function(item) {
-            labels.push(item.label);
-            values.push(item.value);
-        });
-        var ctx = document.getElementById("barChart");
+
+    function plotting(data, id) {
+        var labels = Object.keys(data);
+        var values = Object.values(data);
+        if (id == "countries") {
+            var type = 'line';
+        } else if (id == "categoies") {
+            var type = 'bar';
+        } else if (id == "cat_launched") {
+            var type = 'line';
+        } else if (id == "cat_launched") {
+            var type = 'line';
+        } else if (id == "cat_states") {
+            var type = 'line';
+        } else if (id == "cat_pledged") {
+            var type = 'radar';
+        } else {
+            var type = 'line';
+        }
+
+        var ctx = document.getElementById(id);
         var myChart = new Chart(ctx, {
-            type: 'bar',
+            type: type,
             responsive: false,
             data: {
                 labels: labels,
                 datasets: [{
-                    label: '# of Votes',
+                    label: '',
                     data: values,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
@@ -40,7 +100,16 @@
                         'rgba(255, 206, 86, 0.2)',
                         'rgba(75, 192, 192, 0.2)',
                         'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
                     ],
                     borderColor: [
                         'rgba(255,99,132,1)',
@@ -48,7 +117,16 @@
                         'rgba(255, 206, 86, 1)',
                         'rgba(75, 192, 192, 1)',
                         'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
                     ],
                     borderWidth: 1
                 }]
@@ -64,20 +142,99 @@
             }
         });
     };
+</script>
+<script>
+    function plotting2(data, id) {
+        var chartcanvas = document.getElementById(id);
 
-    function dynamicColors() {
-        var r = Math.floor(Math.random() * 255);
-        var g = Math.floor(Math.random() * 255);
-        var b = Math.floor(Math.random() * 255);
-        return "rgba(" + r + "," + g + "," + b + ", 0.5)";
-    }
+        var values = Object.values(data);
+        var labels = Object.values(values)[0];
+        var fail = Object.values(values)[1];
+        var sucsses = Object.values(values)[2];
+        console.log(Object.values(values)[2]);
 
-    function poolColors(a) {
-        var pool = [];
-        for (i = 0; i < a; i++) {
-            pool.push(dynamicColors());
-        }
-        return pool;
+        Chart.defaults.global.defaultFontFamily = "Lato";
+        Chart.defaults.global.defaultFontSize = 14;
+
+        var fail = {
+            label: 'Fail Projects',
+            data: Object.values(fail),
+            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 0.3,
+            yAxisID: "y-axis-density"
+        };
+
+        var sucsses = {
+            label: 'Sucsses Projects',
+            data: Object.values(sucsses),
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 0.5,
+            yAxisID: "y-axis-gravity"
+        };
+
+        var allData = {
+            labels: Object.values(labels),
+            datasets: [fail, sucsses]
+        };
+
+        var chartOptions = {
+            scales: {
+                xAxes: [{
+                    barPercentage: 1,
+                    categoryPercentage: 0.6
+                }],
+                yAxes: [{
+                    id: "y-axis-density"
+                }, {
+                    id: "y-axis-gravity"
+                }]
+            }
+        };
+
+        var barChart = new Chart(chartcanvas, {
+            type: 'bar',
+            data: allData,
+            options: chartOptions
+        });
     }
 </script>
+<style>
+    .flex-grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .flex-grid>div {
+        width: 45%;
+        height: 50%;
+        margin: 20px;
+    }
+    
+    .box {
+        border: solid 0.3px #e0b54d;
+        width: 200px;
+        background: #f9e6d3;
+        padding: 5px;
+        margin-left: 35px;
+        float: left;
+    }
+    
+    .box2 {
+        border: 0;
+        border-top: 1px solid #d6a677;
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+    
+    h1 {
+        float: left;
+    }
+    
+    h2 {
+        float: right;
+        margin-right: 10px;
+    }
+</style>
 {% endblock %}

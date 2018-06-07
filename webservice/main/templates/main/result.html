@@ -1,5 +1,5 @@
 <!DOCTYPE html> {% extends 'main/template.html' %} {% block content %}
-<div class="container" style="width:350px">
+<div class="container" style="width:350px; float: left;margin-left: 50px;">
     <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between align-items-center">
             Project name:
@@ -10,8 +10,8 @@
             <span class="badge badge-primary badge-pill">{{ data.main_category }}</span>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            Backers:
-            <span class="badge badge-warning badge-pill">{{ data.backers }}</span>
+            USD Pledged:
+            <span class="badge badge-warning badge-pill">{{ data.usd_pledged }}</span>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
             Country:
@@ -36,7 +36,7 @@
             <span class="badge progress-bar-danger">{{ DT }}</span> {% endif %}
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a class="button" href="{% url 'getProject' data.id %}">Update Features</a>
+            <a class="button" style="float:right;margin-top:20px; " href="{% url 'getProject' data.id %}">Update Features</a>
         </li>
     </ul>
 </div>

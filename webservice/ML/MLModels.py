@@ -30,35 +30,27 @@ class MLmodel():
         newdf = df.copy()
         
         newdf['country'] = newdf['country'].astype('category').cat.codes
-        newdf['category'] = newdf['category'].astype('category').cat.codes
         newdf['main_category'] = newdf['main_category'].astype('category').cat.codes
-        newdf['currency'] = newdf['currency'].astype('category').cat.codes
-        
-        to_drop = ['ID', 'name','currency','category','usd pledged','deadline','pledged','launched','goal','usd_pledged_real']
-
+        to_drop = ['Unnamed: 0','ID', 'name','currency','category','backers','deadline','pledged','launched','goal','usd_pledged_real']
         newdf.drop(columns=to_drop, axis=1, inplace=True)
-
         y = newdf['state']
         
-        newdf = newdf.drop('state', 1)
+        newdf.drop('state', 1, inplace=True)
         self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(newdf, y, test_size = 0.1, random_state=42)
         return self.X_train, self.X_test, self.Y_train, self.Y_test, df
         
     # Decision Tree
     def DecisionTree(self):
-        decision_tree = DecisionTreeClassifier()
-        decision_tree.fit(self.X_train, self.Y_train)
-
-        # save the model to disk
+        dt = DecisionTreeClassifier()
+        dt.fit(self.X_train, self.Y_train)
         filename = 'finalized_DT_model.sav'
-        pickle.dump(decision_tree, open(filename, 'wb'))
+        pickle.dump(dt, open(filename, 'wb'))
 
-
+        
     # Random Forest
     def RandomForest(self):
-        random_forest = RandomForestClassifier(n_estimators=100)
-        random_forest.fit(self.X_train, self.Y_train)
-
-        # save the model to disk
+        rf = RandomForestClassifier(n_estimators=100)
+        rf.fit(self.X_train, self.Y_train)
         filename = 'finalized_RF_model.sav'
-        pickle.dump(random_forest, open(filename, 'wb'))
+        pickle.dump(rf, open(filename, 'wb'))
+ 

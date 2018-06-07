@@ -48,19 +48,29 @@
         var labels = Object.keys(data);
         var values = Object.values(data);
         if (id == "countries") {
-            var type = 'line';
+            var type = "line";
+            var labelString = ["Country", "No. of Projects"];
+            var title = "Projects by Country";
         } else if (id == "categoies") {
-            var type = 'bar';
+            var type = "bar";
+            var labelString = ["Category", "No. of Projects"];
+            var title = "Projects by categories";
         } else if (id == "cat_launched") {
-            var type = 'line';
-        } else if (id == "cat_launched") {
-            var type = 'line';
+            var type = "line";
+            var labelString = ["Year", "No. of Projects"];
+            var title = "Projects by year of launched";
         } else if (id == "cat_states") {
-            var type = 'line';
+            var type = "line";
+            var labelString = ["Status", "No. of Projects"];
+            var title = "Projects By Status";
         } else if (id == "cat_pledged") {
-            var type = 'radar';
+            var type = "line";
+            var labelString = ["Category", "Amount USD $"];
+            var title = "Projects By Pledged";
         } else {
-            var type = 'line';
+            var type = "line";
+            var labelString = ["Category", "Amount USD $"];
+            var title = "Projects By Pledged";
         }
 
         var ctx = document.getElementById(id);
@@ -70,7 +80,7 @@
             data: {
                 labels: labels,
                 datasets: [{
-                    label: id,
+                    label: '',
                     data: values,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
@@ -109,15 +119,35 @@
                     borderWidth: 1
                 }]
             },
+
             options: {
+                responsive: true,
+                legend: {
+                    position: 'xx',
+                },
                 scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: labelString[0],
+                        }
+                    }],
                     yAxes: [{
-                        ticks: {
-                            beginAtZero: true
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: labelString[1],
                         }
                     }]
+                },
+                title: {
+                    display: true,
+                    text: title,
                 }
             }
+
+
         });
     };
 </script>
@@ -140,7 +170,7 @@
             backgroundColor: 'rgba(255, 99, 132, 0.6)',
             borderColor: 'rgba(255, 99, 132, 1)',
             borderWidth: 0.3,
-            yAxisID: "y-axis-density"
+
         };
 
         var sucsses = {

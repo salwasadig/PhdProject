@@ -1,15 +1,19 @@
 <!DOCTYPE html> {% extends 'main/template.html' %} {% block content %}
-<div class="container" style="width:350px">
-        <div class="list-group">
-                {% for project in projects %}
-                <a href="{% url 'getProject' project.id %}" class="list-group-item list-group-item-action">{{ project.name }}
-                        {% if project.predected == 1 %}
-                                <span class="badge progress-bar-info">{{ project.predected }}</span>
+<div class="container" style="width:350px;float: left;margin-left: 50px;">
+    <div class="list-group">
+        {% for project in projects %}
+        <a href="{% url 'getProject' project.id %}" class="list-group-item list-group-item-action">{{ project.name }}
+                        {% if project.DT_predicted == 1 %}
+                                <span class="badge progress-bar-info">DT: {{ project.DT_predicted }}</span>
                         {% else %}
-                                <span class="badge progress-bar-danger">{{ project.predected }}</span>
+                                <span class="badge progress-bar-danger">DT: {{ project.DT_predicted }}</span>
                         {% endif %}
-                </a>
-                {% endfor %}
-        </div>
+                        {% if project.RF_predicted == 1 %}
+                                <span class="badge progress-bar-info">RF: {{ project.RF_predicted }}</span>
+                        {% else %}
+                                <span class="badge progress-bar-danger">RF: {{ project.RF_predicted }}</span>
+                        {% endif %}
+                </a> {% endfor %}
+    </div>
 </div>
 {% endblock %}
