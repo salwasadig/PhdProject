@@ -26,23 +26,21 @@ def scusses_fail():
     df_state_1_0 = dfstate_0.merge(dfstate_1, on='Category')
     return df_state_1_0.to_dict()
 
-def DT_model(data):
+def DT_model():
     if not os.path.exists('finalized_DT_model.sav'):
         model.DecisionTree()
         DT = pickle.load(open('finalized_DT_model.sav', 'rb'))
     else:
         DT = pickle.load(open('finalized_DT_model.sav', 'rb'))
-    predected = DT.predict(data)
-    return predected[0]
+    return DT
 
-def RF_model(data):    
+def RF_model():    
     if not os.path.exists('finalized_RF_model.sav'):
         model.RandomForest()
         RF = pickle.load(open('finalized_RF_model.sav', 'rb'))
     else:
         RF = pickle.load(open('finalized_RF_model.sav', 'rb'))
-    predected = RF.predict(data)
-    return predected[0]
+    return RF
 
 
 def home(request):
@@ -62,6 +60,11 @@ def dashboardcharts(request):
     return HttpResponse(convert_dict_json(datacharts))
 
 def projectscharts(request):
+    MLproject = df.shape[0]
+    RF = RF_model()
+    DT = DT_model()
+    RF_score = RF.score(X_test, Y_test)
+    DT_score = DT.score(X_test, Y_test)
     allprojects = ProjectFeature.objects.count()
     DT_success = ProjectFeature.objects.filter(DT_predicted = 1).count()
     DT_fail = ProjectFeature.objects.filter(DT_predicted = 0).count()
@@ -70,7 +73,15 @@ def projectscharts(request):
     if allprojects:
         successper = round((DT_success+RF_success)/(allprojects * 2) * 100, 2)
         failper = round((DT_fail+RF_fail)/(allprojects*2) * 100, 2)
-        context = {'allprojects':allprojects, 'success': DT_success+RF_success,'successper':successper, 'fail': DT_fail+RF_fail, 'failper':failper}
+        context = {'allprojects':allprojects, 
+                   'success': DT_success+RF_success,
+                   'successper':successper, 
+                   'fail': DT_fail+RF_fail, 
+                   'failper':failper,
+                   'RF_score':round(RF_score*100, 2),
+                   'DT_score':round(DT_score*100, 2),
+                   'MLproject':'{:,.0f}'.format(MLproject)
+                   }
     else:
         context = {'allprojects':'', 'success': '','successper':'', 'fail': '', 'failper':''}
     return render(request, 'main/projectscharts.html', context)
@@ -80,31 +91,6 @@ def convert_dict_json(dic):
     jsonData = []
     jsonData.append(json.dumps([{'label': item[0], 'value': item[1]} for item in dic.items()]))
     return jsonData
-
-def predect(request):
-    form = FeaturesForm()
-    context = {'form': form}
-    return render(request, 'main/form.html', context=context)
-
-def savePredict(request):
-    if request.method == "POST":
-        form = FeaturesForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.save()
-            return redirect('/result/{}'.format(post.pk))
-    else:
-        form = FeaturesForm()
-    return render(request, 'main/form.html', {'form': form})
-
-def result(request, id):
-    data = ProjectFeature.objects.get(id=id)
-    y = pd.DataFrame([[data.main_category_id, data.country_id, data.usd_pledged, data.usd_goal_real,data.duration_days]])
-    RF_predicted = RF_model(y)
-    DT_predicted = DT_model(y)
-    ProjectFeature.objects.filter(id=id).update(DT_predicted = DT_predicted, RF_predicted = RF_predicted)
-    context={'data':data, 'DT':DT_predicted, 'RF':RF_predicted}
-    return render(request, 'main/result.html', context=context)
 
 def myprojects(request):
     projects = ProjectFeature.objects.all()
@@ -117,6 +103,11 @@ def getProject(request, id):
     context={'form':form, 'project': project}
     return render(request, 'main/getProject.html', context=context)
 
+def predect(request):
+    form = FeaturesForm()
+    context = {'form': form}
+    return render(request, 'main/form.html', context=context)
+
 def updatePredict(request, id):
     if request.method == "POST":
         project = ProjectFeature.objects.get(id=id)
@@ -127,3 +118,26 @@ def updatePredict(request, id):
     else:
         form = FeaturesForm()
     return render(request, 'main/form.html', {'form': form})
+
+def savePredict(request):
+    if request.method == "POST":
+        form = FeaturesForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.save()
+            data = ProjectFeature.objects.get(id=post.pk)
+            return redirect('/result/{}'.format(post.pk))
+    else:
+        form = FeaturesForm()
+    return render(request, 'main/form.html', {'form': form})
+
+def result(request, id):
+    data = ProjectFeature.objects.get(id=id)
+    y = pd.DataFrame([[data.main_category_id, data.country_id, data.usd_pledged, data.usd_goal_real,data.duration_days]])
+    RF = RF_model()
+    DT = DT_model()
+    RF_predicted = RF.predict(y)
+    DT_predicted = DT.predict(y)
+    ProjectFeature.objects.filter(id=id).update(DT_predicted = DT_predicted[0], RF_predicted = RF_predicted[0])
+    context={'data':data, 'DT':DT_predicted[0], 'RF':RF_predicted[0]}
+    return render(request, 'main/result.html', context=context)

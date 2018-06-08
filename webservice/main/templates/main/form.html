@@ -1,9 +1,12 @@
-{% extends 'main/template.html' %} {% block content %}
+{% extends 'main/template.html' %} {% load static %} {% block content %}
+<script src="{% static 'main/assets/js/jquery.3.2.1.min.js' %}" type="text/javascript"></script>
+
 <h4>Enter your Project Features:</h4>
 <div class="container" style="width:350px; float: left;margin-left: 50px;">
-    <form method="POST" class="post-form" action="{% url 'savePredict' %}">
+    <form id="predictform" method="POST" class="post-form" action="{% url 'savePredict' %}">
         {% csrf_token %} {{ form.as_table }}
         <button type="submit" class="save btn btn-default">Predect</button>
     </form>
 </div>
+
 {% endblock %}

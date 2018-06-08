@@ -6,25 +6,24 @@
 <div class="container" style="background: #e1dbe8;border: solid 0.5px #986dda;padding: 5px;width: auto;">
 
     <div class="ago box">
-        <span class="bpi">Projects used to train the model</span>
+        <span class="bpi">Training the model by</span>
         <h1><i class="pe-7s-server"></i></h1>
-        <h2 class="bph"> {{ allprojects }}</h2>
         <hr class="box2">
-        <small class="bpj bpk">100%</small>
+        <small class="bpj bpk">{{ MLproject }} Projects</small>
     </div>
     <div class="ago box">
         <span class="bpi">Decision Tree Model</span>
         <h1><i class="pe-7s-network"></i></h1>
-        <h2 class="bph">{{ success }}</h2>
+        <h2 class="bph"></h2>
         <hr class="box2">
-        <small class="bpj bpk">Accuracy: %{{ successper }}</small>
+        <small class="bpj bpk">Accuracy: %{{ DT_score }}</small>
     </div>
     <div class="ago box">
         <span class="bpi">Random Forest Model</span>
         <h1><i class="pe-7s-exapnd2"></i></h1>
-        <h2 class="bph">{{ fail }}</h2>
+        <h2 class="bph"></h2>
         <hr class="box2">
-        <small class="bpj bpk">Accuracy: %{{ failper }}</small>
+        <small class="bpj bpk">Accuracy: %{{ RF_score }}</small>
     </div>
 
 </div>
