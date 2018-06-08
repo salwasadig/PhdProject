@@ -16,7 +16,8 @@ class ProjectFeature(models.Model):
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True)
     usd_goal_real = models.FloatField(null=False)
     duration_days = models.IntegerField(null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
     DT_predicted = models.IntegerField(null=True)
     RF_predicted = models.IntegerField(null=True)
 
